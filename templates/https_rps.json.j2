@@ -1,0 +1,68 @@
+{
+  "resource_config": {
+    "res": {
+      "default-get-post-ratio": "1:0",
+      "get-profiles": {
+        {% for item in test_sites -%}
+        "{{ item.name }}": [
+          {% for path in item.paths -%}
+          {
+            "uri": "{{ path }}"
+          }{% if not loop.last %},
+          {% endif -%}
+          {% endfor %}
+        
+        ]{% if not loop.last %},
+        {% endif %}
+        {%- endfor %}
+
+      },
+      "http-version": "{{ http_version }}",
+      "vip-list": [
+        {% for item in test_sites -%}
+        {
+          "get-profile": "{{ item.name }}",
+          "vip": "{{ item.uri }}"
+        }{% if not loop.last %},
+    {% endif %}
+    {% endfor %}
+
+      ]
+    }
+  },
+  "session_config": {
+    "ses": {
+      "connection-range": [
+        10,
+        10
+      ],
+      "cycle-type": "resume",
+      "num-sessions": 10,
+      "requests-range": [
+        10,
+        10
+      ],
+      "session-type": "MaxPerf"
+    }
+  },
+  "instanceProfileConfig": {
+    "inst_prof_1": {
+      "res-tag": "res",
+      "ses-tag": "ses",
+      "traffic-mode": "CLIENT",
+      "traffic-profile": "TCP"
+    }
+  },
+  "te_dp_dict": {
+    {% for item in te_dp_list %}
+"{{ item }}": {
+      "instance_profile": {
+        "inst_prof_1": 2
+      }
+    }{% if not loop.last %},
+{% endif %}
+    {% endfor %}
+  },
+  "client_cert_bundle": {},
+  "max_tolerable_delay": 120
+}

@@ -1,0 +1,66 @@
+{
+  "resource-config" : {
+    "client": {
+      "log-path" : "/tmp/ramcache/",
+      "log-level" : "default",
+      "default-download-upload-ratio" : "1:0",
+      "default-response-timeout" : 20000,
+      "udp-profiles" : {{ udp_profiles | to_nice_json(indent=8) }},
+      "vip-selection-rr" : true,
+      "vip-list" : {{- udp_vip_list | to_nice_json(indent=8) }}
+    },
+    "server": {
+      "type" : "server",
+      "port-list" : {{ udp_server_port_list | to_json }},
+      "log-level" : "default",
+      "log-path" : "/tmp/ramcache/"
+    }
+  },
+  "session_config": {
+    "ses": {
+      "connection-range": [
+        10,
+        10
+      ],
+      "cycle-type": "resume",
+      "num-sessions": 10,
+      "requests-range": [
+        10,
+        10
+      ],
+      "session-type": "MaxPerf"
+    }
+  },
+  "instanceProfileConfig": {
+    "inst_prof_client": {
+      "res-tag": "client",
+      "ses-tag": "ses",
+      "traffic-mode": "CLIENT",
+      "traffic-profile": "UDP"
+    },
+    "inst_prof_server": {
+      "res-tag": "server",
+      "traffic-mode": "SERVER",
+      "traffic-profile": "UDP"
+    }
+  },
+  "te_dp_dict": {
+    {% for item in te_dp_client_list %}
+"{{ item }}": {
+      "instance_profile": {
+        "inst_prof_client": 2
+      }
+    },
+    {% endfor %}
+    {%- for item in te_dp_server_list %}
+"{{ item }}": {
+      "instance_profile": {
+        "inst_prof_server": 1
+      }
+    }{% if not loop.last %},
+{% endif %}
+    {% endfor %}
+  },
+  "client_cert_bundle": {},
+  "max_tolerable_delay": 120
+}

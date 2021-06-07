@@ -1,0 +1,163 @@
+{
+  "resource-config" : {
+    "client": {
+      "log-path" : "/tmp/ramcache/",
+      "log-level" : "default",
+      "default-download-upload-ratio" : "1:0",
+      "default-response-timeout" : 20000,
+      "udp-profiles" : {
+        "profile-1": {
+                "download": {
+                        "request": {
+                                "datagram-size-range": [
+                                        10,
+                                        10
+                                ],
+                                "num-datagram-range": [
+                                        1,
+                                        1
+                                ]
+                        },
+                        "response": {
+                                "datagram-size-range": [
+                                        10,
+                                        10
+                                ],
+                                "num-datagram-range": [
+                                        10,
+                                        10
+                                ],
+                                "timeout": 10000
+                        }
+                },
+                "upload": {
+                        "request": {
+                                "datagram-size-range": [
+                                        10,
+                                        10
+                                ],
+                                "num-datagram-range": [
+                                        10,
+                                        10
+                                ]
+                        },
+                        "response": {
+                                "datagram-size-range": [
+                                        10,
+                                        10
+                                ],
+                                "num-datagram-range": [
+                                        1,
+                                        1
+                                ]
+                        }
+                }
+        },
+        "profile-2": {
+                "download": {
+                        "request": {
+                                "datagram-size-range": [
+                                        10,
+                                        20
+                                ],
+                                "num-datagram-range": [
+                                        2,
+                                        5
+                                ]
+                        },
+                        "response": {
+                                "datagram-size-range": [
+                                        700,
+                                        1000
+                                ],
+                                "num-datagram-range": [
+                                        100,
+                                        100
+                                ],
+                                "timeout": 10000
+                        }
+                }
+        }
+},
+      "vip-selection-rr" : true,
+      "vip-list" :[
+        {
+                "download-upload-ratio": "1:1",
+                "udp-profile": "profile-1",
+                "vip": "192.178.165.5:514"
+        },
+        {
+                "udp-profile": "profile-2",
+                "vip": "192.178.165.51:514"
+        }
+]
+    },
+    "server": {
+      "type" : "server",
+      "port-list" : [514, 9000],
+      "log-level" : "default",
+      "log-path" : "/tmp/ramcache/"
+    }
+  },
+  "session_config": {
+    "ses": {
+      "connection-range": [
+        10,
+        10
+      ],
+      "cycle-type": "resume",
+      "num-sessions": 10,
+      "requests-range": [
+        10,
+        10
+      ],
+      "session-type": "MaxPerf"
+    }
+  },
+  "instanceProfileConfig": {
+    "inst_prof_client": {
+      "res-tag": "client",
+      "ses-tag": "ses",
+      "traffic-mode": "CLIENT",
+      "traffic-profile": "UDP"
+    },
+    "inst_prof_server": {
+      "res-tag": "server",
+      "traffic-mode": "SERVER",
+      "traffic-profile": "UDP"
+    }
+  },
+  "te_dp_dict": {
+    "100.64.238.20": {
+      "instance_profile": {
+        "inst_prof_client": 2
+      }
+    },
+    "100.64.238.21": {
+      "instance_profile": {
+        "inst_prof_client": 2
+      }
+    },
+    "100.64.238.22": {
+      "instance_profile": {
+        "inst_prof_client": 2
+      }
+    },
+    "100.64.238.23": {
+      "instance_profile": {
+        "inst_prof_server": 1
+      }
+    },
+    "100.64.238.24": {
+      "instance_profile": {
+        "inst_prof_server": 1
+      }
+    },
+    "100.64.238.25": {
+      "instance_profile": {
+        "inst_prof_server": 1
+      }
+    }      },
+  "client_cert_bundle": {},
+  "max_tolerable_delay": 120
+}

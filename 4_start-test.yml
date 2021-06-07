@@ -1,0 +1,36 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - global_vars.yml
+  vars:
+    test_type: https_rps
+  tasks:
+    - name: Stop Test
+      uri:
+        url: "http://{{ controller_ip }}:{{ controller_port }}/api/v1.0/te/stop"
+        method: POST
+        body_format: json
+        status_code: 200
+      register: stop_test
+      ignore_errors: yes
+
+    - name: Print Debug information Stop Test task
+      ansible.builtin.debug:
+        var: stop_test
+        verbosity: 1
+
+    - name: Start Test
+      uri:
+        url: "http://{{ controller_ip }}:{{ controller_port }}/api/v1.0/te/start"
+        method: POST
+        body_format: json
+        body: "{{ lookup('file','{{ test_type }}.json') }}"
+        status_code: 200
+      register: start_test
+
+    - name: Print Debug information Start Test task
+      ansible.builtin.debug:
+        var: start_test
+        verbosity: 1

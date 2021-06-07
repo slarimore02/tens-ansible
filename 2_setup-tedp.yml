@@ -1,0 +1,53 @@
+---
+- hosts: tedp
+  collections:
+    - community.docker
+  vars_files:
+    - global_vars.yml
+  vars:
+    tedp_version: "v2.0"
+    dp_interface: "ens192"
+    username: "ubuntu"
+    password: "ubuntu"
+  tasks:
+    - name: Download TEDP image
+      get_url:
+        url: "http://{{ controller_ip }}:{{ nginx_port }}/tedp_docker.tar"
+        dest: "/tmp/tedp_docker_{{ tedp_version }}.tar"
+        mode: "0640"
+    - name: Load TEDP image from the downloaded tar file
+      community.docker.docker_image_load:
+        path: "/tmp/tedp_docker_{{ tedp_version }}.tar"
+    - name: Create a TE-NS Dataplane container
+      community.docker.docker_container:
+        name: tedp
+        privileged: yes
+        image: "tedp:{{ tedp_version }}"
+        restart_policy: always
+        container_default_behavior: no_defaults
+        network_mode: host
+        capabilities:
+          - "SYS_PTRACE"
+        security_opts:
+          - "seccomp=unconfined"
+        ulimits:
+          - "core:9999999999"
+        tmpfs:
+          - "/tmp/ramcache:rw,size=104857600"
+        volumes:
+          - "/tmp/:/te_host/"
+          - "/home/{{ ansible_user }}/.ssh/:/root/.ssh"
+          - "/home/{{ ansible_user }}:/te_root"
+          - "/var/run/netns:/var/run/netns"
+        env:
+          "IPADDRESS": "{{ ansible_facts[dp_interface]['ipv4']['address'] }}"
+          "CTRL_IPADDRESS": "{{ controller_ip }}"
+          "CTRL_FLASK_PORT": "{{ controller_port }}"
+    - name: Register tedp with Controller
+      uri:
+        url: "http://{{ controller_ip }}:{{ controller_port }}/api/v1.0/te/connect"
+        method: POST
+        body_format: json
+        body: "{\"te_dp_dict\":{\"{{ ansible_facts[dp_interface]['ipv4']['address'] }}\":{\"user\":\"{{ username }}\",\"passwd\":\"{{ password }}\"}}}"
+        status_code: 200
+      register: login

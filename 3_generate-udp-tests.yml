@@ -1,0 +1,80 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    te_dp_client_list:
+      - 100.64.238.20
+      - 100.64.238.21
+      - 100.64.238.22
+    te_dp_server_list:
+      - 100.64.238.23
+      - 100.64.238.24
+      - 100.64.238.25
+    test_types:
+      - udp_rps
+    udp_server_port_list:
+      - 514
+      - 9000
+    udp_vip_list:
+      - vip: 192.178.165.5:514
+        udp-profile: profile-1
+        download-upload-ratio: '1:1'
+      - vip: 192.178.165.51:514
+        udp-profile: profile-2
+    udp_profiles:
+      profile-1:
+        upload:
+          request:
+            num-datagram-range:
+            - 10
+            - 10
+            datagram-size-range:
+            - 10
+            - 10
+          response:
+            num-datagram-range:
+            - 1
+            - 1
+            datagram-size-range:
+            - 10
+            - 10
+        download:
+          request:
+            num-datagram-range:
+            - 1
+            - 1
+            datagram-size-range:
+            - 10
+            - 10
+          response:
+            num-datagram-range:
+            - 10
+            - 10
+            datagram-size-range:
+            - 10
+            - 10
+            timeout: 10000
+      profile-2:
+        download:
+          request:
+            num-datagram-range:
+            - 2
+            - 5
+            datagram-size-range:
+            - 10
+            - 20
+          response:
+            num-datagram-range:
+            - 100
+            - 100
+            datagram-size-range:
+            - 700
+            - 1000
+            timeout: 10000
+  tasks:
+    - name: Generate TENS Test Files
+      template:
+        src: "templates/{{ item }}.json.j2"
+        dest: files/{{ item }}.json
+      loop: "{{ test_types }}"

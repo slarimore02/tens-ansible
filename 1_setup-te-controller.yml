@@ -1,0 +1,34 @@
+---
+- hosts: te
+  collections:
+    - community.docker
+  vars_files:
+    - global_vars.yml
+  vars:
+    grafana_port: "5002"
+    redis_port: "6378"
+    postgres_port: "5432"
+    zmq_port: "5555"
+  tasks:
+    - name: Create a TE-NS Controller container
+      community.docker.docker_container:
+        name: te
+        privileged: yes
+        image: projects.registry.vmware.com/tens/te:v2.0
+        restart_policy: always
+        network_mode: host
+        container_default_behavior: no_defaults
+        volumes:
+          - /tmp/:/te_host/
+          - /home/ubuntu/.ssh/:/root/.ssh
+        env:
+          "PYTHONUNBUFFERED": "0"
+          "IPADRESS": "{{ controller_ip }}"
+          "FLASK_PORT": "{{ controller_port }}"
+          "REDIS_PORT": "{{ redis_port }}"
+          "NGINX_PORT": "{{ nginx_port }}"
+          "GRAFANA_PORT": "{{ grafana_port }}"
+          "POSTGRES_PORT": "{{ postgres_port }}"
+          "ZMQ_PORT": "{{ zmq_port }}"
+
+

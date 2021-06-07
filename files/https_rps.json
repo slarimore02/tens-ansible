@@ -1,0 +1,77 @@
+{
+  "resource_config": {
+    "res": {
+      "default-get-post-ratio": "1:0",
+      "get-profiles": {
+        "g1": [
+          {
+            "uri": "/128b.txt"
+          },
+          {
+            "uri": "/index.html"
+          }        
+        ],
+        "g2": [
+          {
+            "uri": "/128b.txt"
+          },
+          {
+            "uri": "/file.txt"
+          }        
+        ]
+      },
+      "http-version": "1.1",
+      "vip-list": [
+        {
+          "get-profile": "g1",
+          "vip": "https://192.168.100.10"
+        },
+        {
+          "get-profile": "g2",
+          "vip": "https://100.64.238.70"
+        }    
+      ]
+    }
+  },
+  "session_config": {
+    "ses": {
+      "connection-range": [
+        10,
+        10
+      ],
+      "cycle-type": "resume",
+      "num-sessions": 10,
+      "requests-range": [
+        10,
+        10
+      ],
+      "session-type": "MaxPerf"
+    }
+  },
+  "instanceProfileConfig": {
+    "inst_prof_1": {
+      "res-tag": "res",
+      "ses-tag": "ses",
+      "traffic-mode": "CLIENT",
+      "traffic-profile": "TCP"
+    }
+  },
+  "te_dp_dict": {
+    "100.64.238.20": {
+      "instance_profile": {
+        "inst_prof_1": 2
+      }
+    },
+    "100.64.238.21": {
+      "instance_profile": {
+        "inst_prof_1": 2
+      }
+    },
+    "100.64.238.22": {
+      "instance_profile": {
+        "inst_prof_1": 2
+      }
+    }      },
+  "client_cert_bundle": {},
+  "max_tolerable_delay": 120
+}

@@ -1,0 +1,4 @@
+# Global Variables used all plays
+controller_ip: 10.206.114.151
+controller_port: "5000"
+nginx_port: "5001"

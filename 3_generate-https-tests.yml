@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    te_dp_list:
+      - 100.64.238.20
+      - 100.64.238.21
+      - 100.64.238.22
+    test_types:
+      - https_rps
+    http_version: "1.1"
+    test_sites:
+      - name: "g1"
+        uri: "https://192.168.100.10"
+        paths:
+          - "/128b.txt"
+          - "/index.html"
+      - name: "g2"
+        uri: "https://100.64.238.70"
+        paths:
+          - "/128b.txt"
+          - "/file.txt"
+  tasks:
+    - name: Generate TENS Test Files
+      template:
+        src: "templates/{{ item }}.json.j2"
+        dest: files/{{ item }}.json
+      loop: "{{ test_types }}"
